@@ -1,28 +1,91 @@
-This folder structure should be suitable for starting a project that uses a database:
+To get list of saved bookmarks:
+  Request:
+GET "/link" do
+HEADER: "Authorization: username"
 
-* Clone the repo
-* `rake generate:migration <Name>` to create a migration
-* `rake db:migrate` to run it
-* Create models
-* ... ?
-* Profit
+    Response:
+  BODY JSON [{BookmarkObject1
+      title: "title"
+      description: "description"
+      url: "url"
+      created_by: "username"
+      created_at: timestamp
 
-You may need to fiddle around with remotes assuming that you don't want to push to this one (which you probably don't).
+    },
+    {BookmarkObject2
+      title: "title"
+      description: "description"
+      url: "url"
+      created_by: "username"
+      created_at: timestamp
+      }]
 
-## Rundown
+    status: (200, 401, 403, etc...)
 
-```
-.
-├── Gemfile             # Details which gems are required by the project
-├── README.md           # This file
-├── Rakefile            # Defines `rake generate:migration` and `db:migrate`
-├── config
-│   └── database.yml    # Defines the database config (e.g. name of file)
-├── console.rb          # `ruby console.rb` starts `pry` with models loaded
-├── db
-│   ├── dev.sqlite3     # Default location of the database file
-│   ├── migrate         # Folder containing generated migrations
-│   └── setup.rb        # `require`ing this file sets up the db connection
-└── lib                 # Your ruby code (models, etc.) should go here
-    └── all.rb          # Require this file to auto-require _all_ `.rb` files in `lib`
-```
+
+To get list of recommended bookmarks:
+
+Request:
+GET "/link/recommendation" do
+HEADER: "Authorization: username"
+
+Response:
+BODY JSON [{BookmarkObject1
+    title: "title"
+    description: "description"
+    url: "url"
+    created_by: "username"
+    posted_to: "otherusername"
+    created_at: timestamp
+
+  },
+  {BookmarkObject2
+    title: "title"
+    description: "description"
+    url: "url"
+    created_by: "username"
+    created_at: timestamp
+    }]
+
+  Status: (200, 401, 403, etc...)
+
+
+  To save a bookmark:
+
+    Request:
+  POST "/link" do
+  HEADER: "Authorization: username"
+  BODY: {
+    title: "link to save"
+    description: "description"
+    url: "url"
+  }
+
+    Response:
+  Status: (200, 401, 403, etc...)
+  JSON BODY: "Save was un/successful!"
+
+
+To recommend a bookmark:
+  Request:
+POST "link/recommendation" do
+Header: "Authorization: username"
+BODY: {
+  title: "link to recommend"
+  posted_at: "user receiving recommendation"
+}
+
+  Response:
+Status: (200, 401, 403, etc...)
+JSON Body "Success/Failure!"
+
+DELETE "/link" do
+Header: "Authorization: username"
+BODY: {
+  title: "link to delete"
+}
+
+  Response:
+Status
+Status: (200, 401, 403, etc...)
+JSON Body "Link deleted!" or 'error'
