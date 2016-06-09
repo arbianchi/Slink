@@ -19,25 +19,11 @@ class AppTests < Minitest::Test
     ShopDBApp.reset_database
   end
 
-  def make_existing_user
-    User.create! first_name: "Existing", last_name: "User", password: "hunter2"
-  end
-
   def make_item
     Item.create! description: "Old Busted", price: 3.50
   end
 
-  def test_can_add_users
-    assert_equal 0, User.count
-
-    r = post "/users", first_name: "New", last_name: "User", password: "password"
-
-    assert_equal 200, r.status
-    assert_equal 1, User.count
-    assert_equal "New", User.first.first_name
-  end
-
-  def test_users_can_add_items
+  def test_users_can_add_links
     user = make_existing_user
     header "Authorization", user.password
     assert_equal 0, Item.count
