@@ -8,5 +8,6 @@ def post_to_slack user, url, recipient
 	# data = JSON.parse File.read '.\plannerdata.json'
 end
 
-post_to_slack "adina","www.test.com","maryhowell"
-puts "success!"
+#for testing
+#post_to_slack "adina","www.test.com","maryhowell"
+#puts "success!"
