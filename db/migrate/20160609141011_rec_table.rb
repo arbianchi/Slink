@@ -4,7 +4,7 @@ class RecTable < ActiveRecord::Migration
       t.string :title
       t.string :description
       t.string :URL
-      t.integer :created_by
+      t.string :created_by
       t.timestamps :created_at
       t.string :posted_at
     end

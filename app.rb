@@ -37,11 +37,11 @@ class SlinkApp < Sinatra::Base
 
   # To save a bookmark:
   post "/link" do
-    users = params[:username]
+    username = params[:username]
     body = request.body.read
     begin
       new_link = parsed_body
-      Link.create(title: new_link[:title], description: new_link[:description], URL: new_link[:URL])
+      Link.create(title: new_link[:title], description: new_link[:description], URL: new_link[:URL], created_by: user)
     rescue
       status 400
       halt "Can't parse json: '#{body}'"
@@ -56,14 +56,18 @@ class SlinkApp < Sinatra::Base
     json recommendations
   end
 
+  def user
+    User.where(password: request.env["HTTP_AUTHORIZATION"]).first
+  end
+
   # Save a recommendation a bookmark:
   post "link/recommendation" do
-    users = params[:username]
+    username = params[:username]
     body = request.body.read
     begin
       new_rec = parsed_body
-      post_to_slack user, url, recipient 
-      Recommendation.create(title: new_rec[:title])
+      post_to_slack user, url, recipient
+      Recommendation.create(title: new_rec[:title], created_by: user)
     rescue
       status 400
       halt "There is not a link titled '#{body}''"
@@ -71,24 +75,18 @@ class SlinkApp < Sinatra::Base
     200
   end
 
-
-
   #To delete bookmark
   delete "/link" do
-    users = params[:username]
+    username = username
     body = request.body.read
     begin
       #FIXME
-      item = links.find(title: params[:title])
+      item = links.find(title: title])
       status 200
     rescue
       status 400
       halt "You can't delete that"
     end
-
-    # def user
-    #   User.where(password: request.env["HTTP_AUTHORIZATION"]).first
-    # end
 
     def parsed_body
       begin
