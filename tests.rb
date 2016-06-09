@@ -23,6 +23,9 @@ class AppTests < Minitest::Test
     Item.create! description: "Old Busted", price: 3.50
   end
 
+
+#Adina -Post link & send recommendation
+#Mary - Gets and Deletes
   def test_users_can_add_links
     user = make_existing_user
     header "Authorization", user.password

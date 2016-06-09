@@ -2,6 +2,7 @@ require 'sinatra/base'
 require 'sinatra/json'
 require 'json'
 require 'pry'
+require 'slackapi.rb'
 
 
 class SlinkApp < Sinatra::Base
@@ -34,7 +35,7 @@ class SlinkApp < Sinatra::Base
     json links
   end
 
-    # To save a bookmark:
+  # To save a bookmark:
   post "/link" do
     users = params[:username]
     body = request.body.read
@@ -55,12 +56,13 @@ class SlinkApp < Sinatra::Base
     json recommendations
   end
 
-  # To recommend a bookmark:
+  # Save a recommendation a bookmark:
   post "link/recommendation" do
     users = params[:username]
     body = request.body.read
     begin
       new_rec = parsed_body
+      post_to_slack user, url, recipient 
       Recommendation.create(title: new_rec[:title])
     rescue
       status 400
@@ -68,6 +70,8 @@ class SlinkApp < Sinatra::Base
     end
     200
   end
+
+
 
   #To delete bookmark
   delete "/link" do
@@ -80,19 +84,19 @@ class SlinkApp < Sinatra::Base
     rescue
       status 400
       halt "You can't delete that"
-  end
-  
-  # def user
-  #   User.where(password: request.env["HTTP_AUTHORIZATION"]).first
-  # end
-
-  def parsed_body
-    begin
-      @parsed_body ||= JSON.parse request.body.read
-    rescue
-      halt 400
     end
+
+    # def user
+    #   User.where(password: request.env["HTTP_AUTHORIZATION"]).first
+    # end
+
+    def parsed_body
+      begin
+        @parsed_body ||= JSON.parse request.body.read
+      rescue
+        halt 400
+      end
+    end
+
+
   end
-
-
-end
