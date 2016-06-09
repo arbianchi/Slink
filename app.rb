@@ -1,11 +1,16 @@
-# This is a starting point. Feel free to add / modify, as long as the tests pass
+require 'sinatra/base'
+require 'sinatra/json'
+require 'json'
+require 'pry'
+
+
 class SlinkApp < Sinatra::Base
   set :logging, true
   set :show_exceptions, false
   error do |e|
     raise e
   end
-
+  #Authorization
   before do
     require_authorization!
   end
@@ -26,7 +31,7 @@ class SlinkApp < Sinatra::Base
   get "/link" do user
     links = Link.where(username: [header]).pluck(:user_id)
     status 200
-    body links.to_json
+    json links
   end
 
     # To save a bookmark:
@@ -43,34 +48,40 @@ class SlinkApp < Sinatra::Base
     200
   end
 
+  #To get list of recommended bookmarks:
+  get "/link/recommendation" do
+    recommendations = Recommendation.all
+    status 200
+    json recommendations
+  end
 
-  #
-  # Request:
-  # GET "/link/recommendation" do
-  # HEADER: "Authorization: username"
-  #
-  # Response:
-  # BODY JSON [{BookmarkObject1
-  #     title: "title"
-  #     description: "description"
-  #     url: "url"
-  #     created_by: "username"
-  #     posted_to: "otherusername"
-  #     created_at: timestamp
-  #
-  #   },
-  #   {BookmarkObject2
-  #     title: "title"
-  #     description: "description"
-  #     url: "url"
-  #     created_by: "username"
-  #     created_at: timestamp
-  #     }]
-  #
-  #   Status: (200, 401, 403, etc...)
+  # To recommend a bookmark:
+  post "link/recommendation" do
+    users = params[:username]
+    body = request.body.read
+    begin
+      new_rec = parsed_body
+      Recommendation.create(title: new_rec[:title])
+    rescue
+      status 400
+      halt "There is not a link titled '#{body}''"
+    end
+    200
+  end
 
-
-
+  #To delete bookmark
+  delete "/link" do
+    users = params[:username]
+    body = request.body.read
+    begin
+      #FIXME
+      item = links.find(title: params[:title])
+      status 200
+    rescue
+      status 400
+      halt "You can't delete that"
+  end
+  
   # def user
   #   User.where(password: request.env["HTTP_AUTHORIZATION"]).first
   # end
