@@ -52,40 +52,27 @@ class AppTests < Minitest::Test
   #   assert_equal Purchase.first, user.purchases.first
   # end
 
-  # def test_users_cant_buy_non_items
-  #   user = make_existing_user
-  #   header "Authorization", user.password
-  #
-  #   assert_raises ActiveRecord::RecordNotFound do
-  #     post "/items/99999/buy", quantity: 5
-  #   end
-  #
-  #   assert_equal 0, Purchase.count
-  # end
+  def test_users_cant_delete_arbitrary_items
+    link = make_link
+    header "Authorization", username
 
-  # def test_users_cant_delete_arbitrary_items
-  #   item = make_item
-  #   user = make_existing_user
-  #   header "Authorization", user.password
-  #
-  #   r = delete "/items/#{item.id}"
-  #
-  #   assert_equal 403, r.status
-  #   assert_equal 1, Item.count
-  # end
+    r = delete "/items/#{item.id}"
 
-  # def test_users_can_delete_their_items
-  #   item = make_item
-  #   user = make_existing_user
-  #   header "Authorization", user.password
-  #
-  #   item.listed_by = user
-  #   item.save!
-  #   r = delete "/items/#{item.id}"
-  #
-  #   assert_equal 200, r.status
-  #   assert_equal 0, Item.count
-  # end
+    assert_equal 403, r.status
+    assert_equal 1, Item.count
+  end
+
+  def test_users_can_delete_their_links
+    link = make_link
+    header "Authorization", username
+
+    link.created_by = username
+    link.save!
+    r = delete "/links/#{item.id}"
+
+    assert_equal 200, r.status
+    assert_equal 0, Link.count
+  end
   #
   # def test_users_can_see_who_has_ordered_an_item
   #   item = make_item

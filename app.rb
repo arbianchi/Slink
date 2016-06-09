@@ -11,6 +11,12 @@ class SlinkApp < Sinatra::Base
   error do |e|
     raise e
   end
+
+  def self.reset_database
+    [Recommendation, Link, User].each { |klass| klass.delete_all }
+  end
+
+
   #Authorization
   before do
     require_authorization!
