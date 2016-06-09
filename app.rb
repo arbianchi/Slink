@@ -2,7 +2,7 @@ require 'sinatra/base'
 require 'sinatra/json'
 require 'json'
 require 'pry'
-require 'slackapi.rb'
+# require 'slackapi.rb'
 
 
 class SlinkApp < Sinatra::Base
@@ -81,12 +81,13 @@ class SlinkApp < Sinatra::Base
     body = request.body.read
     begin
       #FIXME
-      item = links.find(title: title])
+      item = links.find(title: title)
       status 200
     rescue
       status 400
       halt "You can't delete that"
     end
+  end
 
     def parsed_body
       begin
