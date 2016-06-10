@@ -20,14 +20,18 @@ class AppTests < Minitest::Test
   end
 
   def make_existing_user
-    User.create! username: "tiy"
+    User.create! username: "adina"
+  end
+
+  def create_link
+    Link.create! created_by: "adina", title: "facebook", description: "things", URL: "www.facebook.com"
   end
 
   def make_link
-    Link.create! username: "tiy", title: "facebook", description: "things", URL: "www.facebook.com"
+    Link.create! created_by: "tiy", title: "facebook", description: "things", URL: "www.facebook.com"
   end
 
-  def friend
+  def make_friend
   User.where(username: "mary").first_or_create!
 end
 
@@ -117,6 +121,20 @@ def test_missing_params_will_error
 
   # assert_equal 400, q.status
   assert_equal 400, r.status
+end
+
+
+def test_users_can_slack_recommendations
+  user = make_existing_user
+  friend = make_friend
+  link = create_link
+  header "Authorization", user.username
+
+  s = post "/link/recommendation", {title: "facebook",posted_at: friend.username,created_by: user.username}.to_json
+  #  binding.pry
+  assert_equal 200, s.status
+  assert_equal 1, Recommendation.count
+
 end
 
 # def test_users_cannot_post_to_other_users_bookmarks

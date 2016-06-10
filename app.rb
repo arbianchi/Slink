@@ -85,12 +85,29 @@ class SlinkApp < Sinatra::Base
     end
     200
   end
+  
+  #post recommendation
+  post "/link/recommendation" do
+
+    begin
+      rec = parsed_body
+      url = Link.where(title: rec["title"]).first["URL"]
+      post_to_slack(rec["created_by"],url,rec["posted_at"])
+      Recommendation.create!(title: rec["title"], posted_at: rec["posted_at"])
+      binding.pry
+    rescue
+      status 400
+      halt "There is not a link titled #{rec['title']}"
+    end
+    200
+
+  end
 
   #To delete bookmark
   delete "/link" do
     if username
       delete_link = parsed_body
-      item = Link.where(title: delete_link["title"], username: username).first.delete
+      item = Link.where(title: delete_link["title"], created_by: username).first.delete
       status 200
     elsif Link.where(title: delete_link["title"])
       status 403
