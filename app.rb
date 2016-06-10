@@ -20,25 +20,18 @@ class SlinkApp < Sinatra::Base
 
 
   #Authorization
-  before do
-    require_authorization!
-  end
-
-  def require_authorization!
-    username = true
-    unless username
-      status 401
-      halt({ error: "You must log in" }.to_json)
-    end
-  end
 
   def username
-    request.env["HTTP_AUTHORIZATION"]
+    username = request.env["HTTP_AUTHORIZATION"]
+    if !username
+      status 401
+      halt({ error: "You must log in" }.to_json)
+    elsif User.find_by(username: username)
+      username
+    else
+      halt 403, "There is no user by that name"
+    end
   end
-
-  # def user
-  #   User.where(password: request.env["HTTP_AUTHORIZATION"]).first
-  # end
 
   def parsed_body
     begin
@@ -50,7 +43,7 @@ class SlinkApp < Sinatra::Base
 
   # To get list of saved bookmarks:
   get "/link" do
-    links = Link.where(created_by: username) #(:title,:URL,:description)
+    links = Link.where(created_by: username)
     status 200
     json links
   end
@@ -78,7 +71,7 @@ class SlinkApp < Sinatra::Base
 
   # Save a recommendation a bookmark:
   post "link/recommendation" do
-      username = username
+      # username = username
     body = request.body.read
     begin
       new_rec = parsed_body
@@ -93,17 +86,17 @@ class SlinkApp < Sinatra::Base
 
   #To delete bookmark
   delete "/link" do
-      username = username
-    # body = request.body.read
-    begin
+    if username
       delete_link = parsed_body
-
-      item = Link.where(title: delete_link["title"]).first.delete
+      item = Link.where(title: delete_link["title"], username: username).first.delete
       status 200
-    rescue
-      status 400
+    elsif Link.where(title: delete_link["title"])
+      status 403
       halt "You can't delete that"
+    else
+      status 400
+      halt "This doesn't exsist"
     end
   end
-  end
-SlinkApp.run!
+end
+# SlinkApp.run!

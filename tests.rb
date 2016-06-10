@@ -20,11 +20,11 @@ class AppTests < Minitest::Test
   end
 
   def make_existing_user
-    User.create! username: "tiy" #password: "hunter2"
+    User.create! username: "tiy"
   end
 
   def make_link
-    Link.create! title: "facebook", description: "things", URL: "www.facebook.com"
+    Link.create! username: "tiy", title: "facebook", description: "things", URL: "www.facebook.com"
   end
 
 
@@ -43,25 +43,23 @@ class AppTests < Minitest::Test
     assert_equal "New Hotness", Link.first.description
   end
 
-  # def test_users_can_buy_items
-  #   item = make_item
-  #   user = make_existing_user
-  #   header "Authorization", user.password
-  #
-  #   r = post "/items/#{item.id}/buy", quantity: 5
-  #
-  #   assert_equal 200, r.status
-  #   assert_equal 1, Purchase.count
-  #   assert_equal 5, Purchase.first.quantity
-  #   assert_equal Purchase.first, user.purchases.first
-  # end
-
   def test_users_cant_delete_arbitrary_links
     user = make_existing_user
     link = make_link
     header "Authorization", user.username
 
-    r = delete "/link/#{item.id}"
+    r = delete "/link", {title: "notthere"}
+
+    assert_equal 400, r.status
+    assert_equal 1, Link.count
+  end
+
+  def test_users_cant_delete_others_links
+    user = make_existing_user
+    link = make_link
+    header "Authorization", user.username
+
+    r = delete "/link", {title: "notthere"}
 
     assert_equal 403, r.status
     assert_equal 1, Link.count
@@ -75,23 +73,11 @@ class AppTests < Minitest::Test
     link.created_by = user.username
     link.save!
     user.save!
-    r = delete "/link", {title: link["title"]}.to_json
+    r = delete "/link", {title: link.title}.to_json
 
     assert_equal 200, r.status
     assert_equal 0, Link.count
   end
-  #
-  # def test_users_can_see_who_has_ordered_an_item
-  #   item = make_item
-  #   3.times do |i|
-  #     u = User.create! first_name: i, last_name: i, password: "pass#{i}"
-  #     u.purchases.create! item: item, quantity: 4
-  #   end
-  #
-  #   r = get "/items/#{item.id}/purchases"
-  #
-  #   assert_equal 200, r.status
-  #   body = JSON.parse r.body
-  #   assert_equal 3, body.count
-  # end
+
+# ["title"]
 end
