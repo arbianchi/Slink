@@ -2,7 +2,9 @@ require 'sinatra/base'
 require 'sinatra/json'
 require 'json'
 require 'pry'
-# require 'slackapi.rb'
+require "./db/setup"
+require "./lib/all"
+require './slackapi'
 
 
 class SlinkApp < Sinatra::Base
@@ -12,7 +14,7 @@ class SlinkApp < Sinatra::Base
     raise e
   end
 
-  def self.reset_database
+  def SlinkApp.reset_database
     [Recommendation, Link, User].each { |klass| klass.delete_all }
   end
 
@@ -34,6 +36,18 @@ class SlinkApp < Sinatra::Base
     request.env["HTTP_AUTHORIZATION"]
   end
 
+  def user
+    User.where(password: request.env["HTTP_AUTHORIZATION"]).first
+  end
+
+  def parsed_body
+    begin
+      @parsed_body ||= JSON.parse request.body.read
+    rescue
+      halt 400
+    end
+  end
+
   # To get list of saved bookmarks:
   get "/link" do user
     links = Link.where(username: [header]).pluck(:user_id)
@@ -44,10 +58,11 @@ class SlinkApp < Sinatra::Base
   # To save a bookmark:
   post "/link" do
     username = params[:username]
-    body = request.body.read
+    # body = request.body.read
     begin
       new_link = parsed_body
       Link.create(title: new_link[:title], description: new_link[:description], URL: new_link[:URL], created_by: user)
+      binding.pry
     rescue
       status 400
       halt "Can't parse json: '#{body}'"
@@ -60,10 +75,6 @@ class SlinkApp < Sinatra::Base
     recommendations = Recommendation.all
     status 200
     json recommendations
-  end
-
-  def user
-    User.where(password: request.env["HTTP_AUTHORIZATION"]).first
   end
 
   # Save a recommendation a bookmark:
@@ -95,13 +106,6 @@ class SlinkApp < Sinatra::Base
     end
   end
 
-    def parsed_body
-      begin
-        @parsed_body ||= JSON.parse request.body.read
-      rescue
-        halt 400
-      end
-    end
 
 
   end

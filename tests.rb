@@ -19,6 +19,10 @@ class AppTests < Minitest::Test
     SlinkApp.reset_database
   end
 
+  def make_existing_user
+    User.create! username: "tiy", password: "hunter2"
+  end
+
   def make_link
     Links.create! title: "facebook", description: "things", URL: "www.facebook.com"
   end
@@ -26,13 +30,13 @@ class AppTests < Minitest::Test
 
 #Adina -Post link & send recommendation
 #Mary - Gets and Deletes
-
+focus
   def test_users_can_add_links
     user = make_existing_user
     header "Authorization", user.password
-    assert_equal 0, Item.count
+    assert_equal 0, Link.count
 
-    r = post "/link", title: "snapchat", description: "New Hotness", URL: "snapchat.com"
+    r = post "/link", {title: "snapchat", description: "New Hotness", URL: "snapchat.com"}.to_json
 
     assert_equal 200, r.status
     assert_equal 1, Link.count
@@ -59,7 +63,7 @@ class AppTests < Minitest::Test
     r = delete "/items/#{item.id}"
 
     assert_equal 403, r.status
-    assert_equal 1, Item.count
+    assert_equal 1, Link.count
   end
 
   def test_users_can_delete_their_links
