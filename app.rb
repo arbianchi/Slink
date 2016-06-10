@@ -36,9 +36,9 @@ class SlinkApp < Sinatra::Base
     request.env["HTTP_AUTHORIZATION"]
   end
 
-  def user
-    User.where(password: request.env["HTTP_AUTHORIZATION"]).first
-  end
+  # def user
+  #   User.where(password: request.env["HTTP_AUTHORIZATION"]).first
+  # end
 
   def parsed_body
     begin
@@ -49,19 +49,19 @@ class SlinkApp < Sinatra::Base
   end
 
   # To get list of saved bookmarks:
-  get "/link" do user
-    links = Link.where(username: user.username).pluck(:user_id)
+  get "/link" do
+    links = Link.where(created_by: username) #(:title,:URL,:description)
     status 200
     json links
   end
 
   # To save a bookmark:
   post "/link" do
-    username = user.username
+    # username = username
     # body = request.body.read
     begin
       new_link = parsed_body
-      Link.create(title: new_link["title"], description: new_link["description"], URL: new_link["URL"], created_by: user.username)
+      Link.create!(username: username, title: new_link["title"], description: new_link["description"], URL: new_link["URL"], created_by: username)
     rescue
       status 400
       halt "Can't parse json: '#{body}'"
@@ -78,12 +78,12 @@ class SlinkApp < Sinatra::Base
 
   # Save a recommendation a bookmark:
   post "link/recommendation" do
-      username = user.username
+      username = username
     body = request.body.read
     begin
       new_rec = parsed_body
-      post_to_slack user, url, recipient
-      Recommendation.create(title: new_rec["title"], created_by: user.username)
+      post_to_slack username, url, recipient
+      Recommendation.create(title: new_rec["title"], created_by: username)
     rescue
       status 400
       halt "There is not a link titled '#{body}''"
@@ -93,7 +93,7 @@ class SlinkApp < Sinatra::Base
 
   #To delete bookmark
   delete "/link" do
-      username = user.username
+      username = username
     # body = request.body.read
     begin
       delete_link = parsed_body
@@ -105,7 +105,5 @@ class SlinkApp < Sinatra::Base
       halt "You can't delete that"
     end
   end
-
-SlinkApp.run!
-
   end
+SlinkApp.run!

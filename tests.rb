@@ -20,7 +20,7 @@ class AppTests < Minitest::Test
   end
 
   def make_existing_user
-    User.create! username: "tiy", password: "hunter2"
+    User.create! username: "tiy" #password: "hunter2"
   end
 
   def make_link
@@ -32,8 +32,8 @@ class AppTests < Minitest::Test
 #Mary - Gets and Deletes
 
   def test_users_can_add_links
-    user = make_existing_user
-    header "Authorization", user.password
+      user = make_existing_user
+      header "Authorization", user.username
     assert_equal 0, Link.count
 
     r = post "/link", {title: "snapchat", description: "New Hotness", URL: "snapchat.com"}.to_json
@@ -59,7 +59,7 @@ class AppTests < Minitest::Test
   def test_users_cant_delete_arbitrary_links
     user = make_existing_user
     link = make_link
-    header "Authorization", user.password
+    header "Authorization", user.username
 
     r = delete "/link/#{item.id}"
 
@@ -70,7 +70,7 @@ class AppTests < Minitest::Test
   def test_users_can_delete_their_links
     user = make_existing_user
     link = make_link
-    header "Authorization", user.password
+    header "Authorization", user.username
 
     link.created_by = user.username
     link.save!
