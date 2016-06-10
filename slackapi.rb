@@ -1,6 +1,6 @@
 require 'json'
 require 'pry'
-require 'HTTParty'
+require 'httparty'
 
 def post_to_slack user, url, recipient
 	token = ENV["SLACK_API_KEY"]
