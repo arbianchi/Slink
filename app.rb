@@ -50,19 +50,18 @@ class SlinkApp < Sinatra::Base
 
   # To get list of saved bookmarks:
   get "/link" do user
-    links = Link.where(username: [header]).pluck(:user_id)
+    links = Link.where(username: user.username).pluck(:user_id)
     status 200
     json links
   end
 
   # To save a bookmark:
   post "/link" do
-    username = params[:username]
+    username = user.username
     # body = request.body.read
     begin
       new_link = parsed_body
-      Link.create(title: new_link[:title], description: new_link[:description], URL: new_link[:URL], created_by: user)
-      binding.pry
+      Link.create(title: new_link["title"], description: new_link["description"], URL: new_link["URL"], created_by: user.username)
     rescue
       status 400
       halt "Can't parse json: '#{body}'"
@@ -79,12 +78,12 @@ class SlinkApp < Sinatra::Base
 
   # Save a recommendation a bookmark:
   post "link/recommendation" do
-    username = params[:username]
+      username = user.username
     body = request.body.read
     begin
       new_rec = parsed_body
       post_to_slack user, url, recipient
-      Recommendation.create(title: new_rec[:title], created_by: user)
+      Recommendation.create(title: new_rec["title"], created_by: user.username)
     rescue
       status 400
       halt "There is not a link titled '#{body}''"
@@ -94,7 +93,7 @@ class SlinkApp < Sinatra::Base
 
   #To delete bookmark
   delete "/link" do
-    username = username
+      username = user.username
     body = request.body.read
     begin
       #FIXME

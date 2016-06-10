@@ -30,7 +30,7 @@ class AppTests < Minitest::Test
 
 #Adina -Post link & send recommendation
 #Mary - Gets and Deletes
-focus
+
   def test_users_can_add_links
     user = make_existing_user
     header "Authorization", user.password
