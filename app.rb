@@ -5,6 +5,9 @@ require 'pry'
 require "./db/setup"
 require "./lib/all"
 require './slackapi'
+require 'rack/cors'
+
+
 
 
 class SlinkApp < Sinatra::Base
@@ -12,6 +15,13 @@ class SlinkApp < Sinatra::Base
   set :show_exceptions, false
   error do |e|
     raise e
+  end
+
+  use Rack::Cors do
+    allow do
+      origins "*"
+      resource "*", headers: :any, methods: :any
+    end
   end
 
   def SlinkApp.reset_database
