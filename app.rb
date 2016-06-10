@@ -7,9 +7,6 @@ require "./lib/all"
 require './slackapi'
 require 'rack/cors'
 
-
-
-
 class SlinkApp < Sinatra::Base
   set :logging, true
   set :show_exceptions, false
@@ -28,9 +25,7 @@ class SlinkApp < Sinatra::Base
     [Recommendation, Link, User].each { |klass| klass.delete_all }
   end
 
-
   #Authorization
-
   def username
     username = request.env["HTTP_AUTHORIZATION"]
     if !username
@@ -60,8 +55,6 @@ class SlinkApp < Sinatra::Base
 
   # To save a bookmark:
   post "/link" do
-    # username = username
-    # body = request.body.read
     begin
       new_link = parsed_body
       Link.create!(username: username, title: new_link["title"], description: new_link["description"], URL: new_link["URL"], created_by: username)
@@ -81,7 +74,6 @@ class SlinkApp < Sinatra::Base
 
   # Save a recommendation a bookmark:
   post "link/recommendation" do
-      # username = username
     body = request.body.read
     begin
       new_rec = parsed_body

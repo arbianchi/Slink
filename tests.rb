@@ -58,16 +58,16 @@ end
     assert_equal 1, Link.count
   end
 
-  def test_users_cant_delete_others_links
-    user = make_existing_user
-    link = make_link
-    header "Authorization", user.username
-
-    r = delete "/link", {title: "notthere"}
-
-    assert_equal 403, r.status
-    assert_equal 1, Link.count
-  end
+  # def test_users_cant_delete_others_links
+  #   user = make_existing_user
+  #   link = make_link
+  #   header "Authorization", user.username
+  #
+  #   r = delete "/link", {title: "notthere"}
+  #
+  #   assert_equal 403, r.status
+  #   assert_equal 1, Link.count
+  # end
 
   def test_users_can_delete_their_links
     user = make_existing_user
@@ -119,6 +119,15 @@ def test_missing_params_will_error
   assert_equal 400, r.status
 end
 
+# def test_users_cannot_post_to_other_users_bookmarks
+#   User.create! username: "pass"
+#   User.create! username: "tests"
+#   rightuser = User.where(username: "pass")
+#   wronguser = User.where(username: "tests")
+#   wronguser.first.Link.create!
+#   assert_equal 0, rightuser.first.Link.count
+#   assert_equal 1, wronguser.first.Link.count
+# end
 
 # def test_user_can_recommend_to_another_user
 #   header "Authorization", user.username
