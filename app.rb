@@ -106,6 +106,6 @@ class SlinkApp < Sinatra::Base
     end
   end
 
-
+SlinkApp.run!
 
   end

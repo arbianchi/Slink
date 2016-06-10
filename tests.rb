@@ -56,15 +56,16 @@ class AppTests < Minitest::Test
   #   assert_equal Purchase.first, user.purchases.first
   # end
 
-  # def test_users_cant_delete_arbitrary_items
-  #   link = make_link
-  #   header "Authorization", username
-  #
-  #   r = delete "/items/#{item.id}"
-  #
-  #   assert_equal 403, r.status
-  #   assert_equal 1, Link.count
-  # end
+  def test_users_cant_delete_arbitrary_links
+    user = make_existing_user
+    link = make_link
+    header "Authorization", user.password
+
+    r = delete "/link/#{item.id}"
+
+    assert_equal 403, r.status
+    assert_equal 1, Link.count
+  end
 
   def test_users_can_delete_their_links
     user = make_existing_user
