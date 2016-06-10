@@ -94,10 +94,11 @@ class SlinkApp < Sinatra::Base
   #To delete bookmark
   delete "/link" do
       username = user.username
-    body = request.body.read
+    # body = request.body.read
     begin
-      #FIXME
-      item = links.find(title: title)
+      delete_link = parsed_body
+
+      item = Link.where(title: delete_link["title"]).first.delete
       status 200
     rescue
       status 400

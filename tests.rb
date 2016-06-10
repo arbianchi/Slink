@@ -24,7 +24,7 @@ class AppTests < Minitest::Test
   end
 
   def make_link
-    Links.create! title: "facebook", description: "things", URL: "www.facebook.com"
+    Link.create! title: "facebook", description: "things", URL: "www.facebook.com"
   end
 
 
@@ -56,23 +56,25 @@ class AppTests < Minitest::Test
   #   assert_equal Purchase.first, user.purchases.first
   # end
 
-  def test_users_cant_delete_arbitrary_items
-    link = make_link
-    header "Authorization", username
-
-    r = delete "/items/#{item.id}"
-
-    assert_equal 403, r.status
-    assert_equal 1, Link.count
-  end
+  # def test_users_cant_delete_arbitrary_items
+  #   link = make_link
+  #   header "Authorization", username
+  #
+  #   r = delete "/items/#{item.id}"
+  #
+  #   assert_equal 403, r.status
+  #   assert_equal 1, Link.count
+  # end
 
   def test_users_can_delete_their_links
+    user = make_existing_user
     link = make_link
-    header "Authorization", username
+    header "Authorization", user.password
 
-    link.created_by = username
+    link.created_by = user.username
     link.save!
-    r = delete "/links/#{item.id}"
+    user.save!
+    r = delete "/link", {title: link["title"]}.to_json
 
     assert_equal 200, r.status
     assert_equal 0, Link.count
