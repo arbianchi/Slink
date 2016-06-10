@@ -6,6 +6,7 @@ gem 'sinatra', require: false
 gem 'sinatra-contrib'
 gem 'httparty'
 gem 'faker'
+gem "rack-cors"
 
 group :development do
   gem 'sqlite3'
