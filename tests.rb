@@ -27,6 +27,10 @@ class AppTests < Minitest::Test
     Link.create! username: "tiy", title: "facebook", description: "things", URL: "www.facebook.com"
   end
 
+  def friend
+  User.where(username: "mary").first_or_create!
+end
+
 
 #Adina -Post link & send recommendation
 #Mary - Gets and Deletes
@@ -79,5 +83,44 @@ class AppTests < Minitest::Test
     assert_equal 0, Link.count
   end
 
-# ["title"]
+  def test_no_username_will_error
+    r = post "/link", body = trial_body
+
+    assert_equal 401, r.status
+  end
+
+  def test_wrong_username_will_error
+    header "Authorization", "johnnybgood"
+
+
+    r = post "/link", body = trial_body
+
+    assert_equal 403, r.status
+  end
+
+def test_user_can_get_list_of_links
+  user = make_existing_user
+  header "Authorization", user.username
+  t = post "/link", {title: "snapchat", description: "New Hotness", URL: "snapchat.com"}.to_json
+  q = post "/link", {title: "linkedin", description: "Something", URL: "linkedin.com"}.to_json
+
+  r = get "/link"
+  assert_equal 200, r.status
+  assert_equal 2, Link.count
+end
+
+# def test_user_can_recommend_to_another_user
+#   header "Authorization", user.username
+#   assert_equal 0, Link.count
+#
+#   r = post "links/recommended", body = trial_body_recom
+#
+#   assert_equal 200, r.status
+#   assert_equal 1, Link.count
+#   assert_equal user.id, Link.first.recommended_by_id
+#   assert_equal friend.id, Link.first.user_id
+#
+# end
+
+
 end
