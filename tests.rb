@@ -83,21 +83,6 @@ end
     assert_equal 0, Link.count
   end
 
-  def test_no_username_will_error
-    r = post "/link", body = trial_body
-
-    assert_equal 401, r.status
-  end
-
-  def test_wrong_username_will_error
-    header "Authorization", "johnnybgood"
-
-
-    r = post "/link", body = trial_body
-
-    assert_equal 403, r.status
-  end
-
 def test_user_can_get_list_of_links
   user = make_existing_user
   header "Authorization", user.username
@@ -108,6 +93,32 @@ def test_user_can_get_list_of_links
   assert_equal 200, r.status
   assert_equal 2, Link.count
 end
+
+def test_no_username_will_error
+  r = post "/link", {title: "snapchat", description: "New Hotness", URL: "snapchat.com"}.to_json
+
+  assert_equal 401, r.status
+end
+
+def test_wrong_username_will_error
+  header "Authorization", "johnnybgood"
+
+  r = post "/link", {title: "snapchat", description: "New Hotness", URL: "snapchat.com"}.to_json
+
+  assert_equal 403, r.status
+end
+
+def test_missing_params_will_error
+  user = make_existing_user
+  header "Authorization", user.username
+
+  r = post "/link", {title: "", description: "New Hotness", URL: "snapchat.com"}.to_json
+  # q = post "link/recommendation", {title: "snapchat", description: "", URL: "snapchat.com"}.to_json
+
+  # assert_equal 400, q.status
+  assert_equal 400, r.status
+end
+
 
 # def test_user_can_recommend_to_another_user
 #   header "Authorization", user.username
