@@ -77,7 +77,9 @@ class SlinkApp < Sinatra::Base
     body = request.body.read
     begin
       new_rec = parsed_body
+
       post_to_slack username, url, recipient
+      binding.pry
       Recommendation.create(title: new_rec["title"], created_by: username)
     rescue
       status 400
@@ -85,7 +87,7 @@ class SlinkApp < Sinatra::Base
     end
     200
   end
-  
+
   #post recommendation
   post "/link/recommendation" do
 
@@ -94,7 +96,6 @@ class SlinkApp < Sinatra::Base
       url = Link.where(title: rec["title"]).first["URL"]
       post_to_slack(rec["created_by"],url,rec["posted_at"])
       Recommendation.create!(title: rec["title"], posted_at: rec["posted_at"])
-      binding.pry
     rescue
       status 400
       halt "There is not a link titled #{rec['title']}"

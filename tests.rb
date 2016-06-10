@@ -32,16 +32,16 @@ class AppTests < Minitest::Test
   end
 
   def make_friend
-  User.where(username: "mary").first_or_create!
-end
+    User.where(username: "maryhowell").first_or_create!
+  end
 
 
-#Adina -Post link & send recommendation
-#Mary - Gets and Deletes
+  #Adina -Post link & send recommendation
+  #Mary - Gets and Deletes
 
   def test_users_can_add_links
-      user = make_existing_user
-      header "Authorization", user.username
+    user = make_existing_user
+    header "Authorization", user.username
     assert_equal 0, Link.count
 
     r = post "/link", {title: "snapchat", description: "New Hotness", URL: "snapchat.com"}.to_json
@@ -87,64 +87,64 @@ end
     assert_equal 0, Link.count
   end
 
-def test_user_can_get_list_of_links
-  user = make_existing_user
-  header "Authorization", user.username
-  t = post "/link", {title: "snapchat", description: "New Hotness", URL: "snapchat.com"}.to_json
-  q = post "/link", {title: "linkedin", description: "Something", URL: "linkedin.com"}.to_json
+  def test_user_can_get_list_of_links
+    user = make_existing_user
+    header "Authorization", user.username
+    t = post "/link", {title: "snapchat", description: "New Hotness", URL: "snapchat.com"}.to_json
+    q = post "/link", {title: "linkedin", description: "Something", URL: "linkedin.com"}.to_json
 
-  r = get "/link"
-  assert_equal 200, r.status
-  assert_equal 2, Link.count
-end
+    r = get "/link"
+    assert_equal 200, r.status
+    assert_equal 2, Link.count
+  end
 
-def test_no_username_will_error
-  r = post "/link", {title: "snapchat", description: "New Hotness", URL: "snapchat.com"}.to_json
+  def test_no_username_will_error
+    r = post "/link", {title: "snapchat", description: "New Hotness", URL: "snapchat.com"}.to_json
 
-  assert_equal 401, r.status
-end
+    assert_equal 401, r.status
+  end
 
-def test_wrong_username_will_error
-  header "Authorization", "johnnybgood"
+  def test_wrong_username_will_error
+    header "Authorization", "johnnybgood"
 
-  r = post "/link", {title: "snapchat", description: "New Hotness", URL: "snapchat.com"}.to_json
+    r = post "/link", {title: "snapchat", description: "New Hotness", URL: "snapchat.com"}.to_json
 
-  assert_equal 403, r.status
-end
+    assert_equal 403, r.status
+  end
 
-def test_missing_params_will_error
-  user = make_existing_user
-  header "Authorization", user.username
+  def test_missing_params_will_error
+    user = make_existing_user
+    header "Authorization", user.username
 
-  r = post "/link", {title: "", description: "New Hotness", URL: "snapchat.com"}.to_json
-  q = post "link/recommendation", {title: "snapchat", description: "", URL: "snapchat.com"}.to_json
+    r = post "/link", {title: "", description: "New Hotness", URL: "snapchat.com"}.to_json
+    q = post "link/recommendation", {title: "snapchat", description: "", URL: "snapchat.com"}.to_json
 
-  assert_equal 400, q.status
-  assert_equal 400, r.status
-end
+    assert_equal 400, q.status
+    assert_equal 400, r.status
+  end
 
 
-def test_users_can_slack_recommendations
-  user = make_existing_user
-  friend = make_friend
-  link = create_link
-  header "Authorization", user.username
+  def test_users_can_slack_recommendations
+    user = make_existing_user
+    friend = make_friend
+    link = create_link
+    header "Authorization", user.username
 
-  s = post "/link/recommendation", {title: "facebook",posted_at: friend.username,created_by: user.username}.to_json
-  #  binding.pry
-  assert_equal 200, s.status
-  assert_equal 1, Recommendation.count
+    s = post "/link/recommendation", {title: "facebook",posted_at: friend.username,created_by: user.username}.to_json
+    #  binding.pry
+    assert_equal 200, s.status
+    assert_equal 1, Recommendation.count
 
-end
+  end
 
-# def test_users_cannot_post_to_other_users_bookmarks
-#   User.create! username: "pass"
-#   User.create! username: "tests"
-#   rightuser = User.where(username: "pass")
-#   wronguser = User.where(username: "tests")
-#   wronguser.first.Link.create!
-#   assert_equal 0, rightuser.first.Link.count
-#   assert_equal 1, wronguser.first.Link.count
-# end
+  # def test_users_cannot_post_to_other_users_bookmarks
+  #   User.create! username: "pass"
+  #   User.create! username: "tests"
+  #   rightuser = User.where(username: "pass")
+  #   wronguser = User.where(username: "tests")
+  #   wronguser.first.Link.create!
+  #   assert_equal 0, rightuser.first.Link.count
+  #   assert_equal 1, wronguser.first.Link.count
+  # end
 
 end
