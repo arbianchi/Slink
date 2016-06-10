@@ -117,9 +117,9 @@ def test_missing_params_will_error
   header "Authorization", user.username
 
   r = post "/link", {title: "", description: "New Hotness", URL: "snapchat.com"}.to_json
-  # q = post "link/recommendation", {title: "snapchat", description: "", URL: "snapchat.com"}.to_json
+  q = post "link/recommendation", {title: "snapchat", description: "", URL: "snapchat.com"}.to_json
 
-  # assert_equal 400, q.status
+  assert_equal 400, q.status
   assert_equal 400, r.status
 end
 
@@ -146,19 +146,5 @@ end
 #   assert_equal 0, rightuser.first.Link.count
 #   assert_equal 1, wronguser.first.Link.count
 # end
-
-# def test_user_can_recommend_to_another_user
-#   header "Authorization", user.username
-#   assert_equal 0, Link.count
-#
-#   r = post "links/recommended", body = trial_body_recom
-#
-#   assert_equal 200, r.status
-#   assert_equal 1, Link.count
-#   assert_equal user.id, Link.first.recommended_by_id
-#   assert_equal friend.id, Link.first.user_id
-#
-# end
-
 
 end
