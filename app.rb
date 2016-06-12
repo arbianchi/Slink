@@ -73,22 +73,7 @@ class SlinkApp < Sinatra::Base
     json recommendations
   end
 
-  # Save a recommendation a bookmark:
-  post "link/recommendation" do
-    body = request.body.read
-    begin
-      new_rec = parsed_body
-
-      post_to_slack username, url, recipient
-      Recommendation.create(title: new_rec["title"], created_by: username)
-    rescue
-      status 400
-      halt "There is not a link titled '#{body}''"
-    end
-    200
-  end
-
-  #post recommendation
+   #post recommendation
   post "/link/recommendation" do
 
     begin
