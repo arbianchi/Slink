@@ -119,4 +119,6 @@ class SlinkApp < Sinatra::Base
     end
   end
 end
-SlinkApp.run!
+
+binding.pry
+# SlinkApp.run!
