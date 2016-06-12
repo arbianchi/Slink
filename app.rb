@@ -58,7 +58,7 @@ class SlinkApp < Sinatra::Base
   post "/link" do
     begin
       new_link = parsed_body
-      Link.create!(username: username, title: new_link["title"], description: new_link["description"], URL: new_link["URL"], created_by: username)
+      Link.create!(title: new_link["title"], description: new_link["description"], URL: new_link["URL"], created_by: username)
     rescue
       status 400
       halt "Can't parse json: '#{body}'"
