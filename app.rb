@@ -34,7 +34,8 @@ class SlinkApp < Sinatra::Base
     elsif User.find_by(username: username)
       username
     else
-      halt 403, "There is no user by that name"
+      User.create!(username: username)
+      username
     end
   end
 
@@ -79,7 +80,6 @@ class SlinkApp < Sinatra::Base
       new_rec = parsed_body
 
       post_to_slack username, url, recipient
-      binding.pry
       Recommendation.create(title: new_rec["title"], created_by: username)
     rescue
       status 400
@@ -120,5 +120,5 @@ class SlinkApp < Sinatra::Base
   end
 end
 
-binding.pry
-# SlinkApp.run!
+
+SlinkApp.run!
