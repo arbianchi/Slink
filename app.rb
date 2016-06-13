@@ -74,20 +74,21 @@ class SlinkApp < Sinatra::Base
   end
 
    #post recommendation
-  post "/link/recommendation" do
-
-    begin
-      rec = parsed_body
-      url = Link.where(title: rec["title"]).first["URL"]
-      post_to_slack(rec["created_by"],url,rec["posted_at"])
-      Recommendation.create!(title: rec["title"], posted_at: rec["posted_at"])
-    rescue
-      status 400
-      halt "There is not a link titled #{rec['title']}"
-    end
-    200
-
-  end
+   post "/link/recommendation" do
+ ​
+     begin
+       rec = parsed_body
+ ​
+       url = Link.where(title: rec["title"]).first["URL"]
+       Recommendation.create!(title: rec["title"], posted_at: rec["posted_at"], created_by: username)
+     rescue
+       status 404
+       halt "There is not a link titled #{rec['title']}"
+     end
+     200
+     rec = "@#{username} recommends #{url} for @#{rec["posted_at"]}!"
+     post_to_slack rec
+   end
 
   #To delete bookmark
   delete "/link" do
@@ -106,4 +107,4 @@ class SlinkApp < Sinatra::Base
 end
 
 
-SlinkApp.run!
+# SlinkApp.run!
